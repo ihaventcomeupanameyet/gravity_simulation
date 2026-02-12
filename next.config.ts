@@ -1,7 +1,17 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
 
-const nextConfig: NextConfig = {
-  /* config options here */
+
+//don't ever touch this
+const nextConfig = {
+    turbopack: {
+        rules: {
+            '*.{glsl,vs,fs,vert,frag}': {
+                loaders: ['raw-loader'],
+                as: '*.js',       // tell Turbopack the loader outputs JS
+            },
+        },
+    },
 };
 
-export default nextConfig;
+
+export default nextConfig
