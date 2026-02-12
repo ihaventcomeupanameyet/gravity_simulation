@@ -28,7 +28,7 @@ export default function Physics(){
             pixelRatio: Math.min(window.devicePixelRatio, 2)
         }
 
-        const gui = new GUI()
+        //const gui = new GUI()
         const debugObject = {
             clearColor: '#160920'
         }
@@ -128,7 +128,8 @@ export default function Physics(){
                     uDataTex: new THREE.Uniform(),
                 },
             blending: THREE.AdditiveBlending,
-            depthWrite: false
+            depthWrite: false,
+            transparent: true
         })
 
 
@@ -172,7 +173,7 @@ export default function Physics(){
          * Camera
          */
             // Base camera
-        const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
+        const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.001, 1000)
         camera.position.set(0, 0, 18)
         scene.add(camera)
 
@@ -193,11 +194,12 @@ export default function Physics(){
         const tick = () =>
         {
             const elapsedTime = clock.getElapsedTime()
-            const delta =  elapsedTime - prevTime
+            const delta =  Math.min(elapsedTime - prevTime,1/60)
             prevTime = elapsedTime
 
             controls.update()
 
+            velVariable.material.uniforms.uDeltaTime.value = delta
             gpgpu.compute()
             particles.material.uniforms.uDataTex.value =
                 gpgpu.getCurrentRenderTarget(posVariable).texture
