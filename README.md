@@ -7,7 +7,7 @@ Newton's law of universal gravitation
 Next.js and three.js
 
 <h2>Project setup</h2>
-```
+```js
 const geo = new THREE.IcosahedronGeometry(3,15);
 ```
 Used the vertex data to generate particle for the simulation, it will generate 
