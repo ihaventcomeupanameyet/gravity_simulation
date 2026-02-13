@@ -110,3 +110,9 @@ detail.
   </figcaption>
 </figure>
 
+<h2>Deployment</h2>
+
+- https://gravity-simulation-rose.vercel.app/
+- You can also run locally by download repo and run command
+```npm run dev```
+
