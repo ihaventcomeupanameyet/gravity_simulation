@@ -2,20 +2,20 @@
 import {useEffect, useRef} from "react";
 import * as THREE from "three";
 import GUI from "lil-gui";
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import gsap from "gsap";
 import vert from './Physics/vert.glsl';
 import frag from './Physics/frag.glsl';
 
 import posShader from './Physics/GPGPU/pos.glsl';
 import velShader from './Physics/GPGPU/vel.glsl';
-import {GPUComputationRenderer} from "three/examples/jsm/misc/GPUComputationRenderer";
+import {GPUComputationRenderer} from "three/examples/jsm/misc/GPUComputationRenderer.js";
 
 
 
 
 export default function Physics(){
-    const L1 = useRef<HTMLCanvasElement|undefined>(undefined);
+    const L1 = useRef<HTMLCanvasElement|null>(null);
 
     function ren(){
         /**
@@ -42,7 +42,7 @@ export default function Physics(){
          * Renderer
          */
         const renderer = new THREE.WebGLRenderer({
-            canvas: canvas,
+            canvas: canvas as HTMLCanvasElement | OffscreenCanvas | undefined,
             antialias: true
         })
         renderer.setSize(sizes.width, sizes.height)
@@ -75,18 +75,22 @@ export default function Physics(){
         for (let i = 0; i < count; i++){
             const i3 = i*3;
             const i4 = i*4;
-            positionTex.image.data[i4] = geo.attributes.position.array[i3]
-            positionTex.image.data[i4+1] = geo.attributes.position.array[i3+1]
-            positionTex.image.data[i4+2] = geo.attributes.position.array[i3+2]
-            positionTex.image.data[i4+3] = Math.random() // mass
 
-            // 0 init speed
-            velocityTex.image.data[i4] = 0
-            velocityTex.image.data[i4+1] = 0
-            velocityTex.image.data[i4+2] = 0
-            velocityTex.image.data[i4+3] = 0
+            if (positionTex.image.data && velocityTex.image.data) {
+                positionTex.image.data[i4] = geo.attributes.position.array[i3]
+                positionTex.image.data[i4+1] = geo.attributes.position.array[i3+1]
+                positionTex.image.data[i4+2] = geo.attributes.position.array[i3+2]
+                positionTex.image.data[i4+3] = Math.random() // mass
 
-            sizeArr[i] = Math.random()
+                // 0 init speed
+                velocityTex.image.data[i4] = 0
+                velocityTex.image.data[i4+1] = 0
+                velocityTex.image.data[i4+2] = 0
+                velocityTex.image.data[i4+3] = 0
+
+                sizeArr[i] = Math.random()
+            }
+
         }
 
         const posVariable = gpgpu.addVariable('uPosTexture',posShader,positionTex);
@@ -128,7 +132,7 @@ export default function Physics(){
                 {
                     uSize: new THREE.Uniform(0.3),
                     uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
-                    uDataTex: new THREE.Uniform(),
+                    uDataTex: new THREE.Uniform(gpgpu.getCurrentRenderTarget(posVariable).texture),
                 },
             blending: THREE.AdditiveBlending,
             depthWrite: false,
