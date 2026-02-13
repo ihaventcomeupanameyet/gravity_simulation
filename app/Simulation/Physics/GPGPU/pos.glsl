@@ -6,7 +6,7 @@ void main(){
 
     vec4 vel = texture(uVelTexture,uv);
 
-    pos.xyz+=vel.xyz;
+    pos.xyz+=vel.xyz * uDeltaTime;
 
     gl_FragColor = pos;
 }

@@ -5,6 +5,7 @@ uniform sampler2D uDataTex;
 varying vec3 vColor;
 
 attribute vec2 aUv;
+attribute float aSize;
 void main()
 {
     // Final position
@@ -15,7 +16,7 @@ void main()
     gl_Position = projectedPosition;
 
     // Point size
-    gl_PointSize = uSize * uResolution.y;
+    gl_PointSize = uSize * uResolution.y * aSize;
     gl_PointSize *= (1.0 / - viewPosition.z);
 
     // Varyings

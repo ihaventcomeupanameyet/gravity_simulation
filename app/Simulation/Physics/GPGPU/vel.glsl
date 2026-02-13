@@ -19,12 +19,12 @@ void main(){
             vec3 r = otherData.xyz - pos.xyz;
             float m = otherData.w;
 
-            float r2 = dot(r, r) + 0.1;
+            float r2 = dot(r, r) + 0.01;
 
             float invR = inversesqrt(r2);
             float invR3 = invR * invR * invR;
 
-            acc += 0.000003 * m * r * invR3;
+            acc += 0.00003 * m * r * invR3;
         }
     }
     vel.xyz += acc * uDeltaTime;

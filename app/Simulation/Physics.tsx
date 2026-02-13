@@ -71,6 +71,7 @@ export default function Physics(){
         const velocityTex = gpgpu.createTexture()
 
 
+        const sizeArr = new Float32Array(count)
         for (let i = 0; i < count; i++){
             const i3 = i*3;
             const i4 = i*4;
@@ -84,6 +85,8 @@ export default function Physics(){
             velocityTex.image.data[i4+1] = 0
             velocityTex.image.data[i4+2] = 0
             velocityTex.image.data[i4+3] = 0
+
+            sizeArr[i] = Math.random()
         }
 
         const posVariable = gpgpu.addVariable('uPosTexture',posShader,positionTex);
@@ -137,6 +140,7 @@ export default function Physics(){
 
         bufferGeo.setDrawRange(0,count)
         bufferGeo.setAttribute('aUv',new THREE.BufferAttribute(uvArr,2))
+        bufferGeo.setAttribute('aSize', new THREE.BufferAttribute(sizeArr,1))
 
 
         const particles = new THREE.Points(bufferGeo,material)
@@ -200,6 +204,7 @@ export default function Physics(){
             controls.update()
 
             velVariable.material.uniforms.uDeltaTime.value = delta
+            posVariable.material.uniforms.uDeltaTime.value = delta
             gpgpu.compute()
             particles.material.uniforms.uDataTex.value =
                 gpgpu.getCurrentRenderTarget(posVariable).texture
