@@ -17,6 +17,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "save-dev": "^0.0.1-security",
+    "stats.js": "^0.17.0",
     "three": "^0.182.0"
   },
   "devDependencies": {

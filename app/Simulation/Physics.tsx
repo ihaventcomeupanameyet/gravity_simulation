@@ -11,6 +11,8 @@ import posShader from './Physics/GPGPU/pos.glsl';
 import velShader from './Physics/GPGPU/vel.glsl';
 import {GPUComputationRenderer} from "three/examples/jsm/misc/GPUComputationRenderer.js";
 
+import Stats from "stats.js";
+
 
 
 
@@ -47,6 +49,11 @@ export default function Physics(){
         })
         renderer.setSize(sizes.width, sizes.height)
         renderer.setPixelRatio(sizes.pixelRatio)
+
+        const stat = new Stats()
+        stat.showPanel(0)
+        document.body.appendChild(stat.dom)
+
 
 
 
@@ -130,13 +137,14 @@ export default function Physics(){
             fragmentShader: frag as string,
             uniforms:
                 {
-                    uSize: new THREE.Uniform(0.3),
+                    uSize: new THREE.Uniform(0.15),
                     uResolution: new THREE.Uniform(new THREE.Vector2(sizes.width * sizes.pixelRatio, sizes.height * sizes.pixelRatio)),
                     uDataTex: new THREE.Uniform(gpgpu.getCurrentRenderTarget(posVariable).texture),
+                    uPixelRatio : { value: renderer.getPixelRatio() },
                 },
             blending: THREE.AdditiveBlending,
             depthWrite: false,
-            transparent: true
+            transparent: true,
         })
 
 
@@ -148,6 +156,7 @@ export default function Physics(){
 
 
         const particles = new THREE.Points(bufferGeo,material)
+        particles.frustumCulled = false;
         scene.add(particles)
 
         /**
@@ -181,8 +190,8 @@ export default function Physics(){
          * Camera
          */
             // Base camera
-        const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.001, 1000)
-        camera.position.set(0, 0, 18)
+        const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 1000)
+        camera.position.set(0, 0, 12)
         scene.add(camera)
 
 
@@ -201,6 +210,8 @@ export default function Physics(){
 
         const tick = () =>
         {
+            stat.begin()
+
             const elapsedTime = clock.getElapsedTime()
             const delta =  Math.min(elapsedTime - prevTime,1/60)
             prevTime = elapsedTime
@@ -215,6 +226,8 @@ export default function Physics(){
 
             // Render
             renderer.render(scene, camera)
+
+            stat.end()
 
             // Call tick again on the next frame
             window.requestAnimationFrame(tick)

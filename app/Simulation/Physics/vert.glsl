@@ -1,6 +1,7 @@
 uniform vec2 uResolution;
 uniform float uSize;
 uniform sampler2D uDataTex;
+uniform float uPixelRatio;
 
 varying vec3 vColor;
 
@@ -18,6 +19,8 @@ void main()
     // Point size
     gl_PointSize = uSize * uResolution.y * aSize;
     gl_PointSize *= (1.0 / - viewPosition.z);
+    gl_PointSize = max(uPixelRatio,gl_PointSize);
+
 
     // Varyings
     vColor = mix(vec3(1.0,1.0,0.0), vec3(0.0,0.0,1.0),particle_info.a);

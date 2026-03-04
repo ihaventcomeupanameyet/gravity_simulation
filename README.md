@@ -1,6 +1,6 @@
 <h2>About the project</h2>
 
-This is a N-Body gravitation simulation project based on 
+This is an N-Body gravitation simulation project based on 
 Newton's law of universal gravitation
 
 <h2>Framework used</h2>
