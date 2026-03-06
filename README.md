@@ -1,10 +1,13 @@
-<h2>About the project</h2>
+# N-Body Gravitation Simulation (GPGPU)
 
-This is an N-Body gravitation simulation project based on 
-Newton's law of universal gravitation
+Real-time gravitational N-body simulation implemented with Three.js and GPGPU.
 
-<h2>Framework used</h2>
-Next.js and three.js
+## Tech Stack
+
+- Next.js
+- Three.js
+- GLSL
+- GPUComputationRenderer
 
 <h2>Project setup</h2>
 
@@ -14,7 +17,8 @@ const geo = new THREE.IcosahedronGeometry(3,15);
 
 Used the vertex data to generate particle for the simulation, it will generate 
 15360 particles in total
-<h2>Main idea</h2>
+
+## Main idea
 
 Newton's law of universal gravitation describes gravity as a force by 
 stating that every particle attracts every other particle in the universe 
@@ -49,30 +53,40 @@ $$
 
 <h2>Issue</h2>
 
-The step to compute gravitational field takes $O(n^2)$ 
-comparison for $n$ particles, that is $15360^2$ computation 
-per frame and for a 60fps device that will be $14155776000$
-, 14 billion times computation per second.
+The step to compute gravitational field takes $O(n^2)$.
+For $15360$ particles this results in:
 
-It is quite difficult for CPU to handle task like this so
-we are going to use GPGPU(general purpose GPU) method that 
-use GPU for both computation and rendering.
+$15360^2$ ≈ 236M pairwise interactions per frame.
 
-<h2>GPGPU</h2>
+At 60 FPS this corresponds to roughly **14 billion interaction
+computations per second**, which is impractical for a CPU implementation.
 
-I used two textures for data texture, one for storing and updating 
-position, I use all 4 channel rgba for xyz position and mass, and one for 
-storing and update for the velocity which I just use three channel
-for velocity vector, and the acceleration field is computed when 
-updating velocity data texture. The computation still takes $O(n^2)$
-operation but we are using GPU to do the computation which contains
-thousands of parallel processing units and can perform same operation on different particles.
+## GPGPU Approach
+
+The simulation uses **GPU-based computation** to evaluate the
+gravitational interactions.
+
+Two floating-point textures are used:
+
+• **Position texture**
+- RGB: particle position
+- A: particle mass
+
+• **Velocity texture**
+- RGB: particle velocity
+
+Each fragment shader invocation updates one particle.
+
+The shader iterates over the position texture to accumulate the
+gravitational acceleration from all other particles.
+
+Although the algorithm remains **O(n²)**, the GPU executes thousands
+of fragments in parallel, making real-time simulation feasible.
 
 <h2>Limitation</h2>
 
-Since we are using particle-generated gravitational field to approximate the process,
-we are going to lose or increase some amount of energy in every
-step. So the energy is not conservative in this simulation.
+This simulation uses **Euler integration**, which does not conserve
+energy perfectly.
 The amount of energy lose or gained per frame depends on
 $\Delta{t}$. Smaller $\Delta{t}$ per frame will result in more
 accurate simulation. 
@@ -95,6 +109,7 @@ detail.
 - ~15k particles simulated in real time
 - Stable FPS on my MacBook air
 - Interactive camera control
+- ~236M particle interactions per frame
 
 <figure>
   <img src="public/beginning.png" alt="" width="600"/>
